@@ -41,6 +41,7 @@ class Scrape:
     
     def ret_df(self) -> pd.DataFrame:
         df = pd.DataFrame(data=self.get_all_raw(),columns=self.cols)
+        df["日付"] = df["時間"].apply(lambda x: self.make_date(int(x)))
 
         df.replace({"--":0,"":0},inplace=True)
         try:
@@ -49,12 +50,27 @@ class Scrape:
             return df
         return df
     
+    def make_date(self,hour) -> datetime.datetime:
+        try:
+            dt = datetime.datetime(self.year,self.month,self.day,hour)
+        except ValueError:
+            dt = datetime.datetime(self.year,self.month,self.day,0)
+            dt += datetime.timedelta(days=1)
+        return dt
+    
     def write2csv(self,path="obsData/"):
         path += f"{self.prec_no}_{self.block_no}/{self.year}/{self.month}/"
 
         os.makedirs(path,exist_ok=True)
 
-        self.ret_df().to_csv(path+f"{self.prec_no}_{self.block_no}_{self.year}_{self.month}_{self.day}.csv",index=False)
+        df = self.ret_df()
+        try:
+            df[["気温","露点温度","蒸気圧","湿度"]] = df[["気温","露点温度","蒸気圧","湿度"]].applymap(lambda x:x.rstrip(" )"))
+        except AttributeError:
+            pass
+
+        df = df.replace("×",np.nan)
+        df.to_csv(path+f"{self.prec_no}_{self.block_no}_{self.year}_{self.month}_{self.day}.csv",index=False)
 
 def main():
     base_url = f"https://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php"
@@ -70,6 +86,14 @@ def main():
         if dt.year == 2023:
             break
 
+def debug():
+    print("debug")
+    base_url = f"https://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php"
+    
+    dt = datetime.datetime(2022,5,5)
+    sc = Scrape(base_url,dt.year,dt.month,dt.day)
+    sc.write2csv()
+    
 
 if __name__ == "__main__":
     main()
