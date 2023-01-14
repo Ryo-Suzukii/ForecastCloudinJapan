@@ -65,9 +65,11 @@ class Scrape:
 
         df = self.ret_df()
         try:
-            df[["気温","露点温度","蒸気圧","湿度"]] = df[["気温","露点温度","蒸気圧","湿度"]].applymap(lambda x:x.rstrip(" )"))
+            df[["気温","露点温度","蒸気圧","湿度","風速","風向"]] = df[["気温","露点温度","蒸気圧","湿度","風速","風向"]].applymap(lambda x:x.rstrip(" )"))
         except AttributeError:
             pass
+
+        # 雲量の値を独自の記法にする(README.md:雲量表記の統一について)
 
         df = df.replace("×",np.nan)
         df.to_csv(path+f"{self.prec_no}_{self.block_no}_{self.year}_{self.month}_{self.day}.csv",index=False)
@@ -75,7 +77,7 @@ class Scrape:
 def main():
     base_url = f"https://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php"
     
-    dt = datetime.datetime(2022,1,1)
+    dt = datetime.datetime(2010,1,1)
 
     while True:
         sc = Scrape(base_url,dt.year,dt.month,dt.day)
@@ -90,7 +92,7 @@ def debug():
     print("debug")
     base_url = f"https://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php"
     
-    dt = datetime.datetime(2022,5,5)
+    dt = datetime.datetime(2000,5,5)
     sc = Scrape(base_url,dt.year,dt.month,dt.day)
     sc.write2csv()
     
