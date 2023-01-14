@@ -70,6 +70,7 @@ class Scrape:
             pass
 
         # 雲量の値を独自の記法にする(README.md:雲量表記の統一について)
+        df["雲量"] = df["雲量"].replace({"0+":0.5,"10-":9.5}).astype(float)
 
         df = df.replace("×",np.nan)
         df.to_csv(path+f"{self.prec_no}_{self.block_no}_{self.year}_{self.month}_{self.day}.csv",index=False)
@@ -92,10 +93,11 @@ def debug():
     print("debug")
     base_url = f"https://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php"
     
-    dt = datetime.datetime(2000,5,5)
+    dt = datetime.datetime(2010,1,1)
     sc = Scrape(base_url,dt.year,dt.month,dt.day)
     sc.write2csv()
     
 
 if __name__ == "__main__":
     main()
+    # debug()
