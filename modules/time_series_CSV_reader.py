@@ -3,9 +3,6 @@ import numpy as np
 import datetime
 import os
 
-# pwdをプロジェクトディレクトリにする
-os.chdir("../")
-
 class TimeSeriesCSVReader:
     """期間を指定しobsDataよりpd.DataFrameとして読み込む
     """
@@ -28,12 +25,13 @@ class TimeSeriesCSVReader:
         Returns:
             pd.DataFrame: 指定期間全部のデータ
         """
+        dt = datetime.datetime(self.start,1,2)
         while True:
-            tmpdf = pd.read_csv(f"{self.path}{self.dt.month}/44_47662_{self.dt.year}_{self.dt.month}_{self.dt.day}.csv")
+            tmpdf = pd.read_csv(f"{self.path}{dt.month}/44_47662_{dt.year}_{dt.month}_{dt.day}.csv")
             self.all_df = pd.concat([self.all_df,tmpdf])
-            self.dt += datetime.timedelta(days=1)
+            dt += datetime.timedelta(days=1)
             del tmpdf
-            if self.dt.year == 2023:
+            if dt.year == 2023:
                 break
-            print(f"\r{self.dt}",end="")
+            print(f"\r{dt}",end="")
         return self.all_df
