@@ -2,3 +2,4 @@ push.sh
 data/
 obsData/
 __pycache__/
+*.log
