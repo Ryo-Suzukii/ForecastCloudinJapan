@@ -27,6 +27,7 @@ class TimeSeriesCSVReader:
         """
         dt = datetime.datetime(self.start,1,2)
         while True:
+            self.path = f"obsData/44_47662/{dt.year}/"
             tmpdf = pd.read_csv(f"{self.path}{dt.month}/44_47662_{dt.year}_{dt.month}_{dt.day}.csv")
             self.all_df = pd.concat([self.all_df,tmpdf])
             dt += datetime.timedelta(days=1)
