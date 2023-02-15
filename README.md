@@ -2,7 +2,9 @@
 ## ja-JA
 
 ### データのダウンロード方法
-容量の問題よりgitでは追跡していないMSMデータと
+容量の問題よりgitでは追跡していないMSMデータと気象庁から提供されている実測値をまとめたデータは管理から外しています．
+MSMデータと気象庁からの提供された実測値を収集するためには、特定のプログラムを実行する必要があります。まず、`curl-MSM-s.sh`シェルスクリプトを実行します。次に、 `scrape_weather_data.py`でスクレイピングして、netCDF2ファイルをdataディレクトリにダウンロードします。最後に、 `get_coordinates_data_from_netCDF2.py`を実行してJSON形式のcsvファイルをobsDataとmsm_dataディレクトリに作成します
+
 ### 雲量
 気象庁が提供しているデータのうち雲量には`0+`や`10-`といった特殊な表記が存在する．
 そもそもこれらの値が指し示す指標は以下のとおりである．
@@ -36,3 +38,6 @@ To unify these as numerical values, they are each treated as follows:
 - `0.05`
 - `0.5`
 - `9.5`
+
+### How to download the data
+To collect the data from MSM and from the Meteorological Agency, you'll need to run specific programs. First of all, you will need to run the `curl-MSM-s.sh` shell script. Then, with `scrape_weather_data.py`, scrape the data and download the netCDF2 file to the data directory. Finally, you can execute `get_coordinates_data_from_netCDF2.py` to create a JSON-formatted CSV file in the obsData and msm_data directories.
