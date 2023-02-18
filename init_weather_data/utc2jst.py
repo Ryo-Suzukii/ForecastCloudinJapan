@@ -30,7 +30,7 @@ class Trans:
             pd.DataFrame: つなげたデータ(UTC)
         """
         prev = self.prevdf[pd.to_datetime(self.prevdf[self.prevtarget]).dt.hour > 14]
-        now = self.prevdf[pd.to_datetime(self.nowdf[self.nowtarget]).dt.hour <= 14]
+        now = self.nowdf[pd.to_datetime(self.nowdf[self.nowtarget]).dt.hour <= 14]
         if ret:
             self.utcdf = pd.concat([prev,now])
             return self.utcdf
@@ -62,6 +62,23 @@ class Trans:
             except FileNotFoundError:
                 print("pathおかしい")
         return self.jstdf
+
+class Obstrans:
+    def __init__(self,date,prev,now):
+        self.date = date
+        self.prev = prev
+        self.now = now
+    
+    def trans(self,issave=True):
+        prev = self.prev.tail(1)
+        now = self.now.iloc[:-1]
+
+        self.df = pd.concat([prev,now])
+
+        if issave:
+            os.makedirs(f"../obs_data/{self.date.year}/{str(self.date.month).zfill(2)}/",exist_ok=True)
+            self.df.to_csv(f"../obs_data/{self.date.year}/{str(self.date.month).zfill(2)}/{self.date.year}_{str(self.date.month).zfill(2)}{str(self.date.day).zfill(2)}.csv",index=False)
+            print(f"\r{self.date}",end="")
 
 def main():
     date = dt.date(2022,1,2)
