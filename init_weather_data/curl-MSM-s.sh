@@ -1,7 +1,7 @@
 mkdir data
 cd data
 
-for i in `seq 2021 2021`; do
+for i in `seq 2010 2021`; do
   mkdir $i
   cd $i
   for j in `seq -w 1 12`; do
