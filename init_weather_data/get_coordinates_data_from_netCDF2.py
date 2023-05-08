@@ -1,3 +1,5 @@
+# 日本の天気予報に必要なデータ(netCDF2)をxarrayを使って取得し、PandasのDataFrame形式で保存するプログラム。
+
 import numpy as np
 import pandas as pd
 import datetime as dt
