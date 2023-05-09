@@ -53,13 +53,18 @@ class PlotCloudOnJapan:
         else:
             plt.show()
 
-    def plot_gif(self):
+    def plot_gif(self,start:dt.datetime,end:dt.datetime,dir="../png",file="image.gif"):
         ims = []
+
+        # startから1時間ずつ増やして返すジェネレータ
+        def date_range(st,en,step=dt.timedelta(hours=1)):
+            current = st
+            while current < en:
+                yield current
+                current += step
         
-        # TODO
-        # 1~23時までにしている範囲を引数によって変えられるようにする
-        for hour in range(1,23):
-            im = self.plot(hour,True)
+        for current_day in date_range(start,end):
+            im = self.plot(current_day.hour,True)
             plt.clf()
             plt.close()
         
@@ -68,7 +73,14 @@ class PlotCloudOnJapan:
         images = list(map(lambda file : Image.open(file) , files))
         
         # gifにする
-        images[0].save('../png/image.gif', save_all=True, append_images=images[1:], duration=400, loop=0)
+        if dir[-1] != "/":
+            dir = dir+"/"
+        
+        if not "." in file:
+            file = file+".gif"
+
+        save_file = dir+file
+        images[0].save(save_file, save_all=True, append_images=images[1:], duration=400, loop=0)
         
         # tmpフォルダ空にする (tmpフォルダごと削除->tmpフォルダの作成をしてるから今後tmpフォルダ使うなら修正必要)
         shutil.rmtree("../tmp")
