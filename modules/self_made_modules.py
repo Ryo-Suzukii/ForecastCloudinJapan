@@ -13,8 +13,13 @@ import shutil
 class PlotCloudOnJapan:
     def __init__(self, date:dt.datetime):
         self.date = date
+        self.map_data = {
+            "zenkoku":[127, 147, 27, 47],
+            "hokkaido":[139, 147, 39, 47],
+            "kanto":[137, 142, 33, 38],
+        }
 
-    def plot(self, hour: int, isgif=False):
+    def plot(self, hour: int, isgif=False,map=None):
         # データを読み込む
         ds = xr.open_dataset(f"../data/{self.date.year}/{str(self.date.month).zfill(2)}/{self.date.year}_{str(self.date.month).zfill(2)}{str(self.date.day).zfill(2)}.nc")
 
@@ -31,20 +36,31 @@ class PlotCloudOnJapan:
         # 欠損値をマスクする
         masked_data = np.ma.masked_where(np.isnan(cloud_array), cloud_array)
 
+        # 表示する範囲の指定
+        if isinstance(map,str):
+            try:
+                map_range = self.map_data[map]
+            except KeyError:
+                print("辞書にないため全国表示します")
+                map_range = self.map_data["zenkoku"]
+        
+        if isinstance(map,list):
+            map_range = map
+
         # 地図を作成する
         fig, ax = plt.subplots(facecolor="darkblue", subplot_kw={'projection': crs.PlateCarree()})
-        ax.set_extent([120, 150, 20, 50], crs.PlateCarree())
+        ax.set_extent(map_range, crs.PlateCarree())
         ax.coastlines(resolution='10m')
 
         # カラーマップを設定する
         cmap = plt.colormaps.get_cmap('Blues')
 
         # プロットする
-        img = ax.imshow(masked_data, cmap=cmap, origin='upper', extent=[120, 150, 20, 50], transform=crs.PlateCarree())
+        img = ax.imshow(masked_data, cmap=cmap, origin='upper', extent=map_range, transform=crs.PlateCarree())
         cbar = plt.colorbar(img, cmap=cmap, orientation='horizontal', shrink=0.8)
         cbar.set_label('Cloud Cover')
 
-        ax.set_title(f"{self.date.year}/{self.date.month}/{self.date.day} {self.date.hour}時の雲")
+        ax.set_title(f"{self.date.year}/{self.date.month}/{self.date.day} {self.date.hour}時(UTC)の雲")
 
         # gifにするならtmp画像として保存
         if isgif:
@@ -53,7 +69,7 @@ class PlotCloudOnJapan:
         else:
             plt.show()
 
-    def plot_gif(self,start:dt.datetime,end:dt.datetime,dir="../png",file="image.gif"):
+    def plot_gif(self,start:dt.datetime,end:dt.datetime,dir="../png",file="image.gif",maps=None):
         ims = []
 
         # startから1時間ずつ増やして返すジェネレータ
@@ -64,7 +80,7 @@ class PlotCloudOnJapan:
                 current += step
         
         for current_day in date_range(start,end):
-            im = self.plot(current_day.hour,True)
+            im = self.plot(current_day.hour,True,map=maps)
             plt.clf()
             plt.close()
         
