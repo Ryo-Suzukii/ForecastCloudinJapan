@@ -20,6 +20,16 @@ class PlotCloudOnJapan:
         }
 
     def plot(self, hour: int, isgif=False,map=None):
+        """netCDF2ファイルより雲の動きをプロットする
+
+        Args:
+            hour (int): 表示する時間
+            isgif (bool, optional): gifにするかどうか. Defaults to False.
+            map (list, optional): 拡大表示するかどうか. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         # データを読み込む
         ds = xr.open_dataset(f"../data/{self.date.year}/{str(self.date.month).zfill(2)}/{self.date.year}_{str(self.date.month).zfill(2)}{str(self.date.day).zfill(2)}.nc")
 
@@ -69,8 +79,27 @@ class PlotCloudOnJapan:
         else:
             plt.show()
 
-    def plot_gif(self,start:dt.datetime,end:dt.datetime,dir="../png",file="image.gif",maps=None):
+    def plot_gif(self,start:dt.datetime,end=None,during=None,dir="../png",file="image.gif",maps="zenkoku"):
+        """gifにして保存する
+
+        Args:
+            start (dt.datetime): 開始のdatetime
+            end (dt.datetime): 終了のdatetime
+            during (int, optional): endを指定しない場合の何時間分表示するか. Defaults to None.
+            dir (str, optional): 保存するディレクトリ. Defaults to "../png".
+            file (str, optional): ファイル名. Defaults to "image.gif".
+            maps (list, optional): 拡大表示する範囲. Defaults to None.
+
+        Yields:
+            _type_: _description_
+        """
         ims = []
+
+        if end == None:
+            end = start
+        
+        if during:
+            end = start + dt.timedelta(hours=during)
 
         # startから1時間ずつ増やして返すジェネレータ
         def date_range(st,en,step=dt.timedelta(hours=1)):
@@ -78,9 +107,9 @@ class PlotCloudOnJapan:
             while current < en:
                 yield current
                 current += step
-        
+
         for current_day in date_range(start,end):
-            im = self.plot(current_day.hour,True,map=maps)
+            self.plot(current_day.hour,True,map=maps)
             plt.clf()
             plt.close()
         
@@ -101,3 +130,6 @@ class PlotCloudOnJapan:
         # tmpフォルダ空にする (tmpフォルダごと削除->tmpフォルダの作成をしてるから今後tmpフォルダ使うなら修正必要)
         shutil.rmtree("../tmp")
         os.mkdir("../tmp")
+
+def main():
+    print("main")
