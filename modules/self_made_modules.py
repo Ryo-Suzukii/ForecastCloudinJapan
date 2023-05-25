@@ -18,6 +18,7 @@ class PlotCloudOnJapan:
             "hokkaido":[139, 147, 39, 47],
             "kanto":[137, 142, 33, 38],
         }
+        self.ds = xr.open_dataset(f"../data/{self.date.year}/{str(self.date.month).zfill(2)}/{self.date.year}_{str(self.date.month).zfill(2)}{str(self.date.day).zfill(2)}.nc")
 
     def plot(self, hour: int, isgif=False,map=None):
         """netCDF2ファイルより雲の動きをプロットする
@@ -31,8 +32,6 @@ class PlotCloudOnJapan:
             _type_: _description_
         """
         # データを読み込む
-        ds = xr.open_dataset(f"../data/{self.date.year}/{str(self.date.month).zfill(2)}/{self.date.year}_{str(self.date.month).zfill(2)}{str(self.date.day).zfill(2)}.nc")
-        self.ds = ds
 
         # もしも時間指定があった時はそっちを優先
         if hour:
@@ -42,7 +41,7 @@ class PlotCloudOnJapan:
         end_time = self.date + dt.timedelta(hours=1)
 
         # データからcloudを取り出す
-        cloud_array = ds.sel(time=slice(self.date, end_time))['ncld'].values[0]
+        cloud_array = self.ds.sel(time=slice(self.date, end_time))['ncld'].values[0]
 
         # 欠損値をマスクする
         masked_data = np.ma.masked_where(np.isnan(cloud_array), cloud_array)
