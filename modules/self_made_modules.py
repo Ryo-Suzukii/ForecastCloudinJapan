@@ -32,6 +32,7 @@ class PlotCloudOnJapan:
         """
         # データを読み込む
         ds = xr.open_dataset(f"../data/{self.date.year}/{str(self.date.month).zfill(2)}/{self.date.year}_{str(self.date.month).zfill(2)}{str(self.date.day).zfill(2)}.nc")
+        self.ds = ds
 
         # もしも時間指定があった時はそっちを優先
         if hour:
@@ -130,6 +131,21 @@ class PlotCloudOnJapan:
         # tmpフォルダ空にする (tmpフォルダごと削除->tmpフォルダの作成をしてるから今後tmpフォルダ使うなら修正必要)
         shutil.rmtree("../tmp")
         os.mkdir("../tmp")
+    
+    def coordinate(self,lon:float,lat:float):
+        """指定した座標のデータをDataFrameにする
+
+        Args:
+            lon (float): 緯度
+            lat (float): 経度
+
+        Returns:
+            pd.DataFrame: time(per hour)ごとの気象データ
+        """
+        tmpdate = dt.datetime(self.date.year,self.date.month,self.date.day,9)
+        df = self.ds.sel(lat=35,lon=139,ref_time=tmpdate,method='nearest').to_dataframe().drop("ref_time",axis=1)
+        return df
+
 
 def main():
     print("main")
