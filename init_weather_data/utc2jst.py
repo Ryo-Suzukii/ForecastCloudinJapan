@@ -96,7 +96,9 @@ class ObsJstToUtc:
         self.current["日付"] -= dt.timedelta(hours=9)
     
     def save(self):
-        pd.concat([self.prev[8:],self.current[:8]]).to_csv(f"../obsData_utc/44_47662/{self.date.year}/{self.date.month}/44_47662_{self.date.year}_{self.date.month}_{self.date.day}.csv",index=False)
+        date = self.date - dt.timedelta(days=1)
+        os.makedirs(f"../obsData_utc/44_47662/{date.year}/{date.month}",exist_ok=True)
+        pd.concat([self.prev[8:],self.current[:8]]).to_csv(f"../obsData_utc/44_47662/{date.year}/{date.month}/44_47662_{date.year}_{date.month}_{date.day}.csv",index=False)
 
 
 def main():
@@ -125,7 +127,7 @@ def obs():
         print(f"\r{date}{' '*5}",end="")
         date += dt.timedelta(days=1)
 
-        if date.year == 2023:
+        if date == dt.date(2023,1,1):
             break
 
 if __name__ == "__main__":
