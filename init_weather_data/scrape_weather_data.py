@@ -78,7 +78,7 @@ class Scrape:
 def main():
     base_url = f"https://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php"
     
-    dt = datetime.datetime(2010,1,1)
+    dt = datetime.datetime(2022,1,1)
 
     while True:
         sc = Scrape(base_url,dt.year,dt.month,dt.day)
@@ -93,11 +93,11 @@ def debug():
     print("debug")
     base_url = f"https://www.data.jma.go.jp/obd/stats/etrn/view/hourly_s1.php"
     
-    dt = datetime.datetime(2010,1,1)
+    dt = datetime.datetime(2021,12,30)
     sc = Scrape(base_url,dt.year,dt.month,dt.day)
     sc.write2csv()
     
 
 if __name__ == "__main__":
-    main()
-    # debug()
+    # main()
+    debug()
