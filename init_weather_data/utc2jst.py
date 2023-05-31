@@ -80,6 +80,25 @@ class Obstrans:
             self.df.to_csv(f"../obs_data/{self.date.year}/{str(self.date.month).zfill(2)}/{self.date.year}_{str(self.date.month).zfill(2)}{str(self.date.day).zfill(2)}.csv",index=False)
             print(f"\r{self.date}",end="")
 
+class ObsJstToUtc:
+    def __init__(self) -> None:
+        pass
+
+    def trans(self,date:dt.date):
+        self.date = date
+        prev_date = date - dt.timedelta(days=1)
+        self.prev = pd.read_csv(f"../obsData/44_47662/{prev_date.year}/{prev_date.month}/44_47662_{prev_date.year}_{prev_date.month}_{prev_date.day}.csv")
+        self.current = pd.read_csv(f"../obsData/44_47662/{date.year}/{date.month}/44_47662_{date.year}_{date.month}_{date.day}.csv")
+        self.prev["日付"] = pd.to_datetime(self.prev["日付"])
+        self.current["日付"] = pd.to_datetime(self.current["日付"])
+
+        self.prev["日付"] -= dt.timedelta(hours=9)
+        self.current["日付"] -= dt.timedelta(hours=9)
+    
+    def save(self):
+        pd.concat([self.prev[8:],self.current[:8]]).to_csv(f"../obsData_utc/44_47662/{self.date.year}/{self.date.month}/44_47662_{self.date.year}_{self.date.month}_{self.date.day}.csv",index=False)
+
+
 def main():
     date = dt.date(2022,1,2)
     while True:
@@ -97,5 +116,18 @@ def main():
         if date.year == 2023:
             break
 
+def obs():
+    date = dt.date(2022,1,1)
+    while True:
+        t = ObsJstToUtc()
+        t.trans(date)
+        t.save()
+        print(f"\r{date}{' '*5}",end="")
+        date += dt.timedelta(days=1)
+
+        if date.year == 2023:
+            break
+
 if __name__ == "__main__":
-    main()
+    # main()
+    obs()
