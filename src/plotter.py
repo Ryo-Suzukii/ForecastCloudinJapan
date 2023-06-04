@@ -62,6 +62,14 @@ class Plotter:
             os.makedirs(f"../png/diff/{self.date.month}",exist_ok=True)
             plt.savefig(f"../png/diff/{self.date.month}/東京_{self.date.year}_{self.date.month}_{self.date.day}.png",bbox_inches='tight')
             plt.close()
+    
+    def getter(self,df):
+        obs = ["o","obs","obs_df"]
+        msm = ["m","msm","msm_df"]
+        if df in obs:
+            return self.obs_df
+        else:
+            return self.msm_df
 
 def main():
     date = dt.date(2022,1,1)
