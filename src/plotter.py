@@ -23,6 +23,7 @@ class Plotter:
         self.msm_df = pocj.coordinate(lat=35.41,lon=139.45)
         self.obs_df = pd.read_csv(f"../obsData_utc/44_47662/{self.date.year}/{self.date.month}/44_47662_{self.date.year}_{self.date.month}_{self.date.day}.csv")
         self.obs_df["日付"] = pd.to_datetime(self.obs_df["日付"])
+        self.obs_df.index = self.obs_df["日付"]
         self.obs_df["雲量"] = self.obs_df["雲量"]*10 # 10倍して0-100の範囲にする
 
 
