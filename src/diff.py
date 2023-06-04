@@ -42,3 +42,23 @@ class Diff:
         ax.set_xlabel("date")
         ax.set_xlim(start,end+dt.timedelta(days=1))
         plt.show()
+
+    def describe(self,start=None,end=None,season=None,month=None):
+        cloud_diff = self.cloud_diff.copy()
+        if (start == None) & (end == None) & (month == None):
+            start = dt.datetime(2022,1,1)
+            end = dt.datetime(2022,12,31)
+        elif month != None:
+            cloud_diff = self.cloud_diff[self.cloud_diff["date"].dt.month == month]
+        else:
+            mask = (start <= self.cloud_diff.index) & (self.cloud_diff.index <= end)
+            cloud_diff = self.cloud_diff[mask]
+
+        if season:
+            start = self.season_list[season][0]
+            end = self.season_list[season][1]
+            
+            mask = (start <= self.cloud_diff.index) & (self.cloud_diff.index <= end)
+            cloud_diff = self.cloud_diff[mask]
+        
+        return cloud_diff.describe()
