@@ -1,31 +1,47 @@
 import datetime as dt
-import pathlib
-import sys
 
-ROOT_PATH = pathlib.Path(__file__).parents[1]
-sys.path.append(str(ROOT_PATH))
 
-from modules.errors import *
-
-class DateRange:
-    def __init__(self,) -> None:
+class DataRange:
+    def __init__(self) -> None:
         pass
-    def date_range(
-            self,
-            start_date : dt.datetime,
-            end_date : dt.datetime,
-            step : str
-        ):
+    
+    def date_range(start, stop, step = "days"):
+        """datetime,dateを用いてイテレーションにする関数
 
-        if not step in ["hours","days"]:
-            raise NoValueError(f"{step} cannot be specified as an argument.")
-        
+        Args:
+            start (date,datetime): はじまりのdate
+            stop (date,datetime): 終わりのdate
+            step (str, optional): 日ごとにするのか時間ごとにするのか."days" or "hours". Defaults to "days".
+
+        Yields:
+            _type_: _description_
+        """
         if step == "days":
             step = dt.timedelta(days=1)
         elif step == "hours":
             step = dt.timedelta(hours=1)
-        current = start_date
-        
-        while current < end_date:
+        current = start
+        while current < stop:
             yield current
             current += step
+
+
+def date_range(start, stop, step = "days"):
+    """datetime,dateを用いてイテレーションにする関数
+
+    Args:
+        start (date,datetime): はじまりのdate
+        stop (date,datetime): 終わりのdate
+        step (str, optional): 日ごとにするのか時間ごとにするのか."days" or "hours". Defaults to "days".
+
+    Yields:
+        _type_: _description_
+    """
+    if step == "days":
+        step = dt.timedelta(days=1)
+    elif step == "hours":
+        step = dt.timedelta(hours=1)
+    current = start
+    while current < stop:
+        yield current
+        current += step
